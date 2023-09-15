@@ -1,0 +1,11 @@
+pandas
+numpy
+seaborn
+# plotly
+# matplotlib
+# scikit-learn
+# dill
+# lightgbm
+# xgboost
+# streamlit
+# -e. 
