@@ -4,9 +4,6 @@ from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s:')
 
-project_name = 'Stroke-Risk-Prediction'
-
-
 list_of_files = [
     ".github/workflows/.gitkeep",
     f"src/__init__.py",
