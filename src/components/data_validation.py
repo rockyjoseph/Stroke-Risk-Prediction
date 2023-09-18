@@ -7,9 +7,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
+from imblearn.over_sampling import SMOTE
+
 from src.logger import logging
-from src.exception import CustomException
 from src.utils import save_object
+
+from src.exception import CustomException
 
 @dataclass
 class DataValidationConfig:
@@ -59,10 +62,26 @@ class DataValidation:
             logging.info("Read the Train-Test data")
             logging.info("Obtaining preprocessing object")
 
+            sample = SMOTE()
             preprocessing_object = self.get_data_validation_object()
 
+            test_df = test_df[test_df['gender'] != 'Other']
+
             target_column_name = 'stroke'
-            numerical_columns = ['age','avg_glucose_level','bmi']
+
+            q1 = train_df['bmi'].quantile(.25)
+            q3 = train_df['bmi'].quantile(.75)
+
+            IQR = q3 - q1
+
+            train_df['bmi'] = train_df['bmi'].apply(lambda x:np.nan if x > q3 + 1.5 * IQR or x < q1 - 1.5 * IQR else x)
+            test_df['bmi'] = test_df['bmi'].apply(lambda x:np.nan if x > q3 + 1.5 * IQR or x < q1 - 1.5 * IQR else x)
+
+            upper_limit = q3 + 1.5 * IQR
+            lower_limit = q1 - 1.5 * IQR
+
+            train_df = train_df[(train_df['bmi'] <= upper_limit) & (train_df['bmi'] >= lower_limit)]
+            test_df = test_df[(test_df['bmi'] <= upper_limit) & (test_df['bmi'] >= lower_limit)]
 
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
             target_feature_train_df = train_df[target_column_name]
@@ -72,10 +91,10 @@ class DataValidation:
 
             logging.info(f'Applying preprocessing object on training dataframe and testing dataframe')
 
-            # input_feature_train_df = input_feature_train_df.drop(columns=[categorical_columns])
-            # input_feature_test_df = input_feature_test_df.drop(columns=[categorical_columns])
+            input_feature_train_df, input_feature_test_df = sample.fit_resample(input_feature_train_df, input_feature_test_df)
+
             input_feature_train_arr = preprocessing_object.fit_transform(input_feature_train_df)
-            input_feature_test_arr = preprocessing_object.fit_transform(input_feature_test_df)
+            input_feature_test_arr = preprocessing_object.transform(input_feature_test_df)
 
             train_arr = np.c_[
                 input_feature_train_arr, target_feature_train_df
@@ -93,7 +112,6 @@ class DataValidation:
             )
 
             return train_arr, test_arr, self.data_validation_config.preprocessor_obj_file_path
-
 
         except Exception as e:
             raise CustomException(e, sys)
