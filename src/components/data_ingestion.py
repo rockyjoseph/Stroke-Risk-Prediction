@@ -7,6 +7,10 @@ from src.exception import CustomException
 from dataclasses import dataclass
 from sklearn.model_selection import train_test_split
 
+from src.components.data_validation import DataValidation
+from src.components.data_validation import DataValidationConfig
+from src.components.data_transformation import DataTransformation
+
 @dataclass
 class DataIngestionConfig:
     train_data_path: str = os.path.join('artifacts','train.csv')
@@ -22,6 +26,7 @@ class DataIngestion:
 
         try:
             df = pd.read_csv('notebook\data\stroke.csv')
+            df.drop(columns=['id'], inplace=True)
             logging.info('Read the dataset as dataframe')
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)
@@ -44,3 +49,9 @@ class DataIngestion:
 if __name__ == '__main__':
     module = DataIngestion()
     train_data, test_data = module.initiate_data_ingestion()
+
+    data_validation = DataValidation()
+    train_arr, test_arr,_ = data_validation.initiate_data_transformation(train_data, test_data)
+
+    data_transformation = DataTransformation()
+    print(data_transformation.initiate_data_transformation(train_arr, test_arr))
