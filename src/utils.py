@@ -7,6 +7,7 @@ import pickle
 from src.exception import CustomException
 
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import RandomizedSearchCV
 
 def save_object(file_path, obj):
     try:
@@ -20,13 +21,18 @@ def save_object(file_path, obj):
     except Exception as e:
         raise CustomException(e, sys)
 
-def evaluate_model(X_train, X_test, y_train, y_test, models):
+def evaluate_model(X_train, X_test, y_train, y_test, models, params):
     try:
         report = {}
 
         for i in range(len(list(models))):
             model = list(models.values())[i]
+            param = params[list(models.keys())[i]]
 
+            rs_grid = RandomizedSearchCV(model, param, cv=5)
+            rs_grid.fit(X_train,y_train)
+
+            model.set_params(**rs_grid.best_params_)
             model.fit(X_train, y_train)
 
             y_pred = model.predict(X_test)

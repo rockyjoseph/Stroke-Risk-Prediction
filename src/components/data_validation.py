@@ -42,7 +42,7 @@ class DataValidation:
             logging.info(f'Categorical columns {categorical_columns}')
             logging.info(f'Numerical columns {numerical_columns}')
 
-            preprocessor=ColumnTransformer(
+            preprocessor = ColumnTransformer(
                 [
                     ("num_pipeline", num_pipeline, numerical_columns),
                     ("cat_pipelines", cat_pipeline, categorical_columns)
@@ -68,6 +68,7 @@ class DataValidation:
             test_df = test_df[test_df['gender'] != 'Other']
 
             target_column_name = 'stroke'
+            categorical_columns = ['gender','ever_married','work_type','Residence_type','smoking_status']
 
             q1 = train_df['bmi'].quantile(.25)
             q3 = train_df['bmi'].quantile(.75)
@@ -83,6 +84,13 @@ class DataValidation:
             train_df = train_df[(train_df['bmi'] <= upper_limit) & (train_df['bmi'] >= lower_limit)]
             test_df = test_df[(test_df['bmi'] <= upper_limit) & (test_df['bmi'] >= lower_limit)]
 
+            # train_encoder = pd.get_dummies(train_df[categorical_columns], drop_first=True)
+            # train_df[train_encoder.columns] = train_encoder            
+
+            # test_encoder = pd.get_dummies(test_df[categorical_columns], drop_first=True)
+            # test_df[test_encoder.columns] = test_encoder
+
+
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
             target_feature_train_df = train_df[target_column_name]
 
@@ -91,17 +99,21 @@ class DataValidation:
 
             logging.info(f'Applying preprocessing object on training dataframe and testing dataframe')
 
-            input_feature_train_df, input_feature_test_df = sample.fit_resample(input_feature_train_df, input_feature_test_df)
-
             input_feature_train_arr = preprocessing_object.fit_transform(input_feature_train_df)
             input_feature_test_arr = preprocessing_object.transform(input_feature_test_df)
 
+            train_df.drop(categorical_columns, axis=1, inplace=True)
+            test_df.drop(categorical_columns, axis=1, inplace=True)
+
+            feature_train_df, target_train_df = sample.fit_resample(input_feature_train_arr, target_feature_train_df)
+            feature_test_df, target_test_df = sample.fit_resample(input_feature_test_arr, target_feature_test_df)
+
             train_arr = np.c_[
-                input_feature_train_arr, target_feature_train_df
+                feature_train_df, target_train_df
             ]
 
             test_arr = np.c_[
-                input_feature_test_arr, target_feature_test_df
+                feature_test_df, target_test_df
             ]
 
             logging.info(f'Saved Preprocessing object')

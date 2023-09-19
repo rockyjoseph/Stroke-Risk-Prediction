@@ -48,7 +48,33 @@ class ModelTrainer:
                 'SVC': SVC()
             }
 
-            model_report: dict = evaluate_model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test, models=models)
+            params = {
+                'KNN':{},
+                'Logistic Regression':{
+                    'C':[0.001,0.01,0.1,1,10,100],
+                    'max_iter':[50,75,100,200,300,400,500,700]
+                },
+
+                'Random Forest':{
+                    'n_estimators': [50, 75,100, 150, 200,300]
+                },
+
+
+                'Gradient Boosting':{
+                    'learning_rate' : [0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1],
+                    'n_estimators': [50, 75,100, 150, 200,300]
+                },
+                'Decision Tree':{},
+                'XgBoost':{},
+                'Lightgbm':{},
+
+                'SVC':{
+                    'C':[0.001,0.01,0.1,1,10,100], 
+                    'gamma':[0.001,0.01,0.1,1,10,100]
+                }
+            }
+
+            model_report: dict = evaluate_model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test, models=models, params=params)
 
             best_model_score = max(sorted(model_report.values()))
 

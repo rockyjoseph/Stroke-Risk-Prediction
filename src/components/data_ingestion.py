@@ -29,6 +29,7 @@ class DataIngestion:
             df = pd.read_csv('notebook\data\stroke.csv')
             df.drop(columns=['id'], inplace=True)
             df['age'] = df['age'].astype('int32')
+
             logging.info('Read the dataset as dataframe')
 
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path), exist_ok=True)
@@ -45,14 +46,13 @@ class DataIngestion:
 if __name__ == '__main__':
     module = DataIngestion()
     raw_data = module.initiate_data_ingestion()
-    # print(raw_data)
 
     data_transformation = DataTransformation()
     train_data, test_data = data_transformation.initiate_data_transformation()
 
     data_validation = DataValidation()
     train_arr, test_arr,_ = data_validation.initiate_data_transformation(train_data, test_data)
-    print(train_arr.shape, test_arr.shape)
+    # print(train_arr.shape, test_arr.shape)
 
     model_trainer = ModelTrainer()
     print(model_trainer.initiate_model_trainer(train_arr, test_arr))
