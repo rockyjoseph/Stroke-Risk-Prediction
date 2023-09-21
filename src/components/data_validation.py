@@ -65,6 +65,7 @@ class DataValidation:
             sample = SMOTE()
             preprocessing_object = self.get_data_validation_object()
 
+            train_df = train_df[train_df['gender'] != 'Other']
             test_df = test_df[test_df['gender'] != 'Other']
 
             target_column_name = 'stroke'
