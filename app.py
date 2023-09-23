@@ -2,11 +2,14 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import streamlit as st
+
 import matplotlib as plt
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
+
+from src.utils import load_object
 
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
@@ -18,25 +21,29 @@ df = df[df['gender'] != 'Other']
 # User menu
 st.sidebar.title('Stroke Risk Prediction App')
 user_menu = st.sidebar.radio('Select an Option',
-                             ('Overview', 'Dataset', 'EDA', 'Model', 'App'))
+                             ('Overview', 'Dataset', 'EDA', 'App'))
 
 if user_menu == 'Overview':
     pass
 
 if user_menu == 'Dataset':
+    # DATASET
     st.header('Dataset')
     st.dataframe(df)
 
-if user_menu == 'EDA':
-    # title 
-    st.title('Explorartory Data Analysis (EDA)')
+    # df.shape
+    st.header('Dataset Infomation')
+    st.code('The dataset consits of 5109 rows and 11 columns')
 
-    # Description of Data
-    st.header('Question 1')
-    st.write('What is description of the data?')
+    # DESCRIPTION OF THE DATA
+    st.header('Description of the data')
     st.table(df.describe())
 
-    # variables decalartion
+if user_menu == 'EDA':
+    # TITLE 
+    st.title('Explorartory Data Analysis (EDA)')
+
+    # VARIABLES DECLARATION
     age = df['age'].nunique()
     hypertension = df['hypertension'].nunique()
     heart_disease = df['heart_disease'].nunique()
@@ -49,10 +56,11 @@ if user_menu == 'EDA':
     residence = df['Residence_type'].nunique()
     smoking = df['smoking_status'].nunique()
 
-    st.header('Question 2')
+    st.header('Question 1')
     st.write('What are the unique values in each features in the data?')
+    st.text('------------------------------------------------------------------------------------------')
 
-    # Numerical features
+    # NUMERICAL FEATURES
     st.title("Numerical Features")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -76,7 +84,9 @@ if user_menu == 'EDA':
         st.header("Glucose Level")
         st.title(avg_glucose_level)
     
-    # Categorical features
+    st.text('------------------------------------------------------------------------------------------')
+
+    # CATEGORICAL FEATURES
     st.title("Categorical Features")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -97,10 +107,11 @@ if user_menu == 'EDA':
         st.header("Smoking Status")
         st.title(smoking)
 
-    st.header('Question 3')
+    st.text('------------------------------------------------------------------------------------------')
+    st.header('Question 2')
     st.write('What are the value counts of each features in the data?')
     
-    # Numerical countplot visualisation
+    # NUMERICAL COUNTPLOT VISUALISATION
     st.title('Categorical Features Visualisation')
 
     categorical_features = [feature for feature in df.columns if df[feature].dtypes == 'O']
@@ -112,7 +123,8 @@ if user_menu == 'EDA':
     fig = px.bar(df, x=countplot_name, color='stroke', title=f'{countplot_name} with stroke')
     st.plotly_chart(fig)
 
-    # Continuous features visualisation
+    # CONTINUOUS FEATURES VISUALISATION
+    st.text('------------------------------------------------------------------------------------------')
     st.header('Continuous features Visualisation')
 
     fig = px.histogram(df, x='age', title='Age counplot visualisation')
@@ -124,8 +136,10 @@ if user_menu == 'EDA':
     fig = px.histogram(df, x='avg_glucose_level', title='Average Glucose Level counplot visualisation')
     st.plotly_chart(fig)
 
-    # Outliers detection visulaisation
-    st.header('Question 4')
+    st.text('------------------------------------------------------------------------------------------')
+
+    # OUTLIERS DETECTION VISUALISATION
+    st.header('Question 3')
     st.write('What if there are any Outliers in the dataset?')
 
     outlier_feature_name = st.selectbox('Features names: ', df.columns[:-1])
@@ -135,20 +149,21 @@ if user_menu == 'EDA':
     fig = px.violin(df, x=outlier_feature_name, color='stroke', title='Outlier Detection (Violinplot)')
     st.plotly_chart(fig)
 
-    # pairplot
-    st.header('Question 5')
+    st.text('------------------------------------------------------------------------------------------')
+
+    # PAIRPLOT
+    st.header('Question 4')
     st.write('How if we can visualize all the features together?')
     st.write("Why not, here's pairplot")
     st.header('Pairplot Visualisation')
     fig = sns.pairplot(data=df, hue='stroke')
     st.pyplot(fig)
 
-
-if user_menu == 'Model':
-    pass
-
 if user_menu == 'App':
+    #TITLE
     st.title('Stroke Risk Prediction App')
+
+    # Input from the user 
     gender = st.selectbox('Gender', df['gender'].unique())
     age = st.selectbox('Age', df['age'].unique())
     hypertension = st.selectbox('Hypertension (1 for Yes, 0 for No)', df['hypertension'].unique())
@@ -160,10 +175,12 @@ if user_menu == 'App':
     bmi = st.selectbox('BMI(Body Mass Index)', df['bmi'].unique())
     smoking_status = st.selectbox('Smoking Status', df['smoking_status'].unique())
 
+    # giving the data to the predict pipeline for prediction
     data = CustomData(gender=gender, age=age, hypertension=hypertension, heart_disease=heart_disease,
                         ever_married=ever_married, work_type=work_type, Residence_type=Residence_type, avg_glucose_level=avg_glucose_level,
                         bmi=bmi, smoking_status=smoking_status)
 
+    # Predict the output
     if st.button('Predict'):
         pred_df = data.get_data_as_data_frame()
         
