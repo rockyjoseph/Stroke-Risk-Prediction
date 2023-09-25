@@ -28,12 +28,12 @@ if user_menu == 'Overview':
 
 if user_menu == 'Dataset':
     # DATASET
-    st.header('Dataset')
+    st.title('Dataset')
     st.dataframe(df)
 
     # df.shape
     st.header('Dataset Infomation')
-    st.code('The dataset consits of 5109 rows and 11 columns')
+    st.code('The dataset consists of 5109 rows and 11 columns')
 
     # DESCRIPTION OF THE DATA
     st.header('Description of the data')
@@ -58,7 +58,7 @@ if user_menu == 'EDA':
 
     st.header('Question 1')
     st.write('What are the unique values in each features in the data?')
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
 
     # NUMERICAL FEATURES
     st.title("Numerical Features")
@@ -84,7 +84,7 @@ if user_menu == 'EDA':
         st.header("Glucose Level")
         st.title(avg_glucose_level)
     
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
 
     # CATEGORICAL FEATURES
     st.title("Categorical Features")
@@ -107,7 +107,7 @@ if user_menu == 'EDA':
         st.header("Smoking Status")
         st.title(smoking)
 
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
     st.header('Question 2')
     st.write('What are the value counts of each features in the data?')
     
@@ -124,7 +124,7 @@ if user_menu == 'EDA':
     st.plotly_chart(fig)
 
     # CONTINUOUS FEATURES VISUALISATION
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
     st.header('Continuous features Visualisation')
 
     fig = px.histogram(df, x='age', title='Age counplot visualisation')
@@ -136,20 +136,24 @@ if user_menu == 'EDA':
     fig = px.histogram(df, x='avg_glucose_level', title='Average Glucose Level counplot visualisation')
     st.plotly_chart(fig)
 
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
 
     # OUTLIERS DETECTION VISUALISATION
     st.header('Question 3')
     st.write('What if there are any Outliers in the dataset?')
 
-    outlier_feature_name = st.selectbox('Features names: ', df.columns[:-1])
+    numerical_features = [feature for feature in df.columns if df[feature].dtypes != 'O']
+    # discrete_features = [feature for feature in numerical_features if len(df[feature].unique()) < 25]
+    continuous_features = [feature for feature in numerical_features if len(df[feature].unique()) > 25]
+
+    outlier_feature_name = st.selectbox('Features names: ', continuous_features)
     fig = px.box(df, y=outlier_feature_name, color='stroke', title='Outlier Detection (Boxplot)')
     st.plotly_chart(fig)
 
     fig = px.violin(df, x=outlier_feature_name, color='stroke', title='Outlier Detection (Violinplot)')
     st.plotly_chart(fig)
 
-    st.text('------------------------------------------------------------------------------------------')
+    st.text('----------------------------------------------------------------------------')
 
     # PAIRPLOT
     st.header('Question 4')
