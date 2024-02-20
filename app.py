@@ -15,7 +15,8 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 # Dataset
-df = pd.read_csv(r'notebook\data\stroke.csv')
+path = "artifacts\data.csv"
+df = pd.read_csv(path, encoding='ISO-8859-1')
 df = df[df['gender'] != 'Other']
 
 # User menu
