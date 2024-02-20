@@ -15,7 +15,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 # Dataset
-df = pd.read_csv('C:\Users\Rocky\Stroke Risk Prediction\notebook\data\stroke.csv')
+df = pd.read_csv(r'C:\Users\Rocky\Stroke Risk Prediction\notebook\data\stroke.csv')
 df = df[df['gender'] != 'Other']
 
 # User menu
