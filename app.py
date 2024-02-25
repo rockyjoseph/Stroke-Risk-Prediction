@@ -9,14 +9,15 @@ import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
 
+import pickle
+
 from src.utils import load_object
 
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 # Dataset
-path = r"\artifacts\data.csv"
-df = pd.read_csv(path, encoding='ISO-8859-1')
+df = pickle.load(open('df.pkl','rb'))
 df = df[df['gender'] != 'Other']
 
 # User menu
