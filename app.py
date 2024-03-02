@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 # Dataset
-df = pickle.load(open('df.pkl','rb'))
+df = pd.read_csv('artifacts\data.csv')
 df = df[df['gender'] != 'Other']
 
 # User menu
