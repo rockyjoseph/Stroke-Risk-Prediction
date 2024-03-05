@@ -51,8 +51,4 @@ if st.button('Predict'):
         if results == 1:
             return 'You have risk of getting a Stroke'
 
-<<<<<<< HEAD
     st.title(str(prediction(results)))
-=======
-        st.title(str(prediction(results)))
->>>>>>> 4ab20060475b589cf81779d239559bf1c6ccbdea
